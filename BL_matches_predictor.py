@@ -43,6 +43,18 @@ def get_team_result(row):
 matches_final['team_result'] = matches_final.apply(get_team_result,axis=1)
 #matches_final['team_result'] = matches_final['team_result'].map({'W':2, 'D':1, 'L':0})
 
+def get_points(row):
+    if(row['goals_for'] > row['goals_against']):
+        return 3
+    elif(row['goals_for'] < row['goals_against']):
+        return 0
+    elif(row['goals_for'] == row['goals_against']):
+        return 1 #1 for Draw
+
+def rolling_averages():
+    matches_final['points'] = matches_final.apply(get_points,axis=1)
+    matches_final['goal_diff'] = matches_final['goals_for'] - matches_final['goals_against']
+
 
 
 # Encode team names into integers
@@ -67,3 +79,19 @@ acc = accuracy_score(test["team_result"], preds) ## testing accuracy
 print(acc)
 
 
+
+"""
+Include goal_diff or points from previous matches
+
+Features like:
+last_5_avg_points
+last_5_avg_goal_diff
+win_streak
+
+Feature engineering ideas:
+
+Home/away stats: teams often perform very differently at home vs away.
+Head-to-head: average points/goals vs this opponent historically.
+Seasonality: matchday number or month (some teams start strong/weak).
+
+"""
